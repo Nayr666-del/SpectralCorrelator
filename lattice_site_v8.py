@@ -115,6 +115,7 @@ def parse_args():
     p.add_argument("--seed", type=int, default=1, help="Random seed for reproducibility")
     p.add_argument("--mu", type=float, default=0.0, help="Thermal parameter in rho = exp(-mu M) / Z")
     p.add_argument("--m_operator", choices=["total_z"], default="total_z", help="Conserved operator used to construct the density matrix")
+    p.add_argument("--print_sR_only", action="store_true", help="Print sR and exit")
 
     return p.parse_args()
 
@@ -325,6 +326,10 @@ def run_realization(args, dynamics, unitary, rho, aops, b0, times, site_start):
 
 def main():
     args = parse_args()
+    print("sR =")
+    print(OBSERVABLES["sR"][0])
+    if args.print_sR_only:
+        return
     if not 0 <= args.alpha <= 1:
         raise ValueError("Require 0 <= alpha <= 1")
     observables = make_observables(args.alpha)

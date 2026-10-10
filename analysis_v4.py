@@ -551,7 +551,7 @@ def main():
         axis=2,
     )
     # Optional at this point
-    time_indices = [-1]#[5, 40, -1]#[4, 10, -1]
+    time_indices = [-1]#[4, 10, -1]
     radial = eigenvalues[site_index, time_indices]
     radial_weights = weights[site_index, time_indices]
 
