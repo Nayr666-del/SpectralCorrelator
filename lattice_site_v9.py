@@ -97,7 +97,7 @@ def parse_args():
         p.add_argument("--" + name, type=float, default=default, help="Chain parameters")
     p.add_argument("--doder", "--disorder", dest="disorder", choices=["X", "Z"], default="Z")
     p.add_argument("--L", type=int, default=5, help="Half-length of the chain")
-    p.add_argument("-D", "--Dynamics", choices=["Ising", "Kicked", "GOE", "UHaar", "MHaar", "Circuit", "Heisenberg", "shell-haar"], default="Ising")
+    p.add_argument("-D", "--Dynamics", choices=["Ising", "Kicked", "GOE", "UHaar", "MHaar", "MCUE", "Circuit", "Heisenberg", "shell-haar"], default="Ising")
     p.add_argument("-P", "--Periodic", choices=["Y", "N"], default="N")
     for name, default in [("tstart", 0.), ("tend", 5.)]: 
         p.add_argument("--" + name, type=float, default=default)
@@ -202,6 +202,12 @@ def magnetization_block_haar(n_sites, rng):
         matrix[np.ix_(indices, indices)] = block
     return matrix
 
+def magnetization_block_cue(n_sites, rng):
+    """Return a unitary with independent CUE blocks at fixed magnetization."""
+    dim = 2 ** n_sites
+    matrix = magnetization_block_haar(n_sites, rng)
+    cue = matrix.T @ matrix
+    return cue
 
 def _energy_shell_labels(values, nsites, energy_width):
     """Return zero-centered finite-width energy-density shell labels."""
@@ -305,6 +311,8 @@ def build_dynamics(args, dim, rng, xops, yops, zops, return_metadata=False):
         return unitary_group.rvs(dim=dim, random_state=rng), True
     elif args.Dynamics == "MHaar":
         return magnetization_block_haar(int(np.log2(dim)), rng), True
+    elif args.Dynamics == "MCUE":
+        return magnetization_block_cue(int(np.log2(dim)), rng), True
     else:
         return _circuit(rng, args.L), True
 
